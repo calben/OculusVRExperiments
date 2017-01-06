@@ -11,15 +11,15 @@ class TWOBROTHERS_API UTargetingSystemComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UTargetingSystemComponent();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsTargeting = true;
