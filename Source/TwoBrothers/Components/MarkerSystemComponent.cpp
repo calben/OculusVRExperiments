@@ -21,15 +21,28 @@ void UMarkerSystemComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
 // Called every frame
-void UMarkerSystemComponent::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+void UMarkerSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
+void UMarkerSystemComponent::DeployMarker(FVector WorldLocation, FRotator WorldRotation)
+{
+	if (!bMultipleMarkerMode)
+	{
+		for (AActor* actor : DeployedMarkers)
+		{
+			actor->Destroy();
+		}
+		DeployedMarkers.Empty();
+	}
+	AActor* NewMarker = GetWorld()->SpawnActor<AActor>(MarkerClass, WorldLocation, WorldRotation);
+	this->DeployedMarkers.Add(NewMarker);
+}

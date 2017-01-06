@@ -3,8 +3,6 @@
 #include "TwoBrothers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RemoteManipulatorComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-
 
 // Sets default values for this component's properties
 URemoteManipulatorComponent::URemoteManipulatorComponent()
@@ -21,9 +19,6 @@ URemoteManipulatorComponent::URemoteManipulatorComponent()
 void URemoteManipulatorComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-
 }
 
 
@@ -31,8 +26,14 @@ void URemoteManipulatorComponent::BeginPlay()
 void URemoteManipulatorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	if (bIsManipulatingByRelativePosition)
+	{
+		const FVector Delta = this->GetComponentLocation() - RelativePositionManipulatorVector;
+		if (CurrentTargetPrimitiveRoot)
+		{
+			CurrentTargetPrimitiveRoot->AddForce(Delta * BaseForceScale);
+		}
+	}
 }
 
 void URemoteManipulatorComponent::AddImpulseToTargetAlongForwardVector(float ImpulseAmount)
@@ -93,8 +94,46 @@ void URemoteManipulatorComponent::DampenTargetForces(float DampeningAmount)
 	}
 }
 
+void URemoteManipulatorComponent::StartManipulatingByRelativePosition()
+{
+	if (CurrentTargetPrimitiveRoot)
+	{
+		if (RelativePositionManipulatorIndicatorActorClass)
+		{
+			bIsManipulatingByRelativePosition = true;
+			RelativePositionManipulatorVector = GetComponentLocation();
+			RelativePositionManipulatorIndicatorActor = GetWorld()->SpawnActor<AActor>(RelativePositionManipulatorIndicatorActorClass, this->GetComponentLocation(), this->GetComponentRotation());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FAILED TO SET RelativePositionManipulatorIndicatorActorClass"));
+		}
+		// TODO
+		// spawn indicator actor
+		// could be a good time for a marker :-)
+	}
+}
+
+void URemoteManipulatorComponent::StopManipulatingByRelativePosition()
+{
+	if (bIsManipulatingByRelativePosition)
+	{
+		RelativePositionManipulatorIndicatorActor->Destroy();
+		bIsManipulatingByRelativePosition = false;
+	}
+}
+
 void URemoteManipulatorComponent::SetCurrentTarget(AActor* NewTarget)
 {
+	if (CurrentTarget)
+	{
+		CurrentTargetPrimitiveRoot->SetLinearDamping(CurrentTargetPrimitiveRoot->GetLinearDamping() - LinearDampingAmount);
+		CurrentTargetPrimitiveRoot->SetAngularDamping(CurrentTargetPrimitiveRoot->GetAngularDamping() - AngularDampingAmount);
+	}
+	if (bIsManipulatingByRelativePosition)
+	{
+		StopManipulatingByRelativePosition();
+	}
 	if (NewTarget)
 	{
 		UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(NewTarget->GetRootComponent());
@@ -104,8 +143,15 @@ void URemoteManipulatorComponent::SetCurrentTarget(AActor* NewTarget)
 			{
 				CurrentTarget = NewTarget;
 				CurrentTargetPrimitiveRoot = Primitive;
+				CurrentTargetPrimitiveRoot->SetLinearDamping(CurrentTargetPrimitiveRoot->GetLinearDamping() + LinearDampingAmount);
+				CurrentTargetPrimitiveRoot->SetAngularDamping(CurrentTargetPrimitiveRoot->GetAngularDamping() + AngularDampingAmount);
 			}
 		}
 	}
 }
 
+void URemoteManipulatorComponent::JerkCurrentTarget(float ImpulseMultiplier, float TorqueMultiplier)
+{
+	CurrentTargetPrimitiveRoot->AddImpulse(UKismetMathLibrary::RandomUnitVector() * ImpulseMultiplier);
+	CurrentTargetPrimitiveRoot->AddTorque(UKismetMathLibrary::RandomUnitVector() * TorqueMultiplier);
+}
