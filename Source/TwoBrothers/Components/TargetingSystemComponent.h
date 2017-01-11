@@ -27,6 +27,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AActor* CurrentTarget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bDrawDebug = false;
+
 	UFUNCTION(BlueprintCallable, Category = Targeting)
 		virtual void SetCurrentTarget();
 

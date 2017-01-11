@@ -53,8 +53,9 @@ void UTargetingSystemComponent::SetCurrentTarget()
 	start = start + (direction * 100.0f);
 	FVector end = start + (direction * 2000.0f);
 	GetWorld()->LineTraceSingleByChannel(f, start, end, ECC_Visibility, params);
-	GetWorld()->DebugDrawTraceTag = "TargetingTrace";
+	if (bDrawDebug)
+	{
+		GetWorld()->DebugDrawTraceTag = "TargetingTrace";
+	}
 	CurrentTarget = f.GetActor();
-	//UPointLightComponent* PointLight = NewObject<UPointLightComponent>(CurrentTarget, TEXT("ActiveTargetIndicatorLight"));
-	//PointLight->RegisterComponent();
 }
