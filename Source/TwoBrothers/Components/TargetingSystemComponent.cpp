@@ -50,7 +50,7 @@ void UTargetingSystemComponent::SetCurrentTarget()
 	FVector direction = this->GetForwardVector();
 	FCollisionQueryParams  params = FCollisionQueryParams(FName(TEXT("TargetingTrace")), true, NULL);
 	params.bTraceAsyncScene = true;
-	start = start + (direction * 100.0f);
+	start = start + (direction * 10.0f);
 	FVector end = start + (direction * 2000.0f);
 	GetWorld()->LineTraceSingleByChannel(f, start, end, ECC_Visibility, params);
 	if (bDrawDebug)
