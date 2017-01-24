@@ -30,7 +30,14 @@ void UTargetingSystemComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (this->bIsTargeting)
+	{
+		PreviousTarget = CurrentTarget;
 		SetCurrentTarget();
+		if (PreviousTarget != CurrentTarget)
+		{
+			OnTargetChanged();
+		}
+	}
 	// ...
 }
 
@@ -58,4 +65,30 @@ void UTargetingSystemComponent::SetCurrentTarget()
 		GetWorld()->DebugDrawTraceTag = "TargetingTrace";
 	}
 	CurrentTarget = f.GetActor();
+}
+
+void UTargetingSystemComponent::OnTargetChanged()
+{
+	UpdateHighlighting();
+}
+
+void UTargetingSystemComponent::UpdateHighlighting()
+{
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UPDATING HIGHLIGHTING")));
+	if (PreviousTarget)
+	{
+		UPrimitiveComponent* preprim = PreviousTarget->GetRootPrimitiveComponent();
+		if (preprim)
+		{
+			preprim->SetRenderCustomDepth(false);
+		}
+	}
+	if (CurrentTarget)
+	{
+		UPrimitiveComponent* currprim = CurrentTarget->GetRootPrimitiveComponent();
+		if (currprim)
+		{
+			currprim->SetRenderCustomDepth(true);
+		}
+	}
 }
