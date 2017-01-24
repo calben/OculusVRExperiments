@@ -31,10 +31,10 @@ public:
 		bool bIncreaseDampingOnCurrentTarget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float LinearDampingAmount = 2.f;
+		float LinearDampingAmount = 0.2f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float AngularDampingAmount = 2.f;
+		float AngularDampingAmount = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BaseImpulseScale = 1000;
