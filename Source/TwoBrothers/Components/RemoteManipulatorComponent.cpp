@@ -31,7 +31,7 @@ void URemoteManipulatorComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		const FVector ForceVector = CalculateForceVectorByRestrictedRelativePosition();
 		if (CurrentTargetPrimitiveRoot)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("APPLYING FORCE: %s"), *ForceVector.ToString()));
+			// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("APPLYING FORCE: %s"), *ForceVector.ToString()));
 			CurrentTargetPrimitiveRoot->AddForce(ForceVector * BaseForceScale);
 		}
 	}
